@@ -36,21 +36,52 @@ app.post("/api/login", (req, res) => {
   );
 });
 
-// GET /api/orders?employeeId=1
+// GET /api/orders?employeeId=1&page=1&limit=10
 app.get("/api/orders", (req, res) => {
-  const { employeeId } = req.query;
+  const { employeeId, page = 1, limit = 10 } = req.query;
+  const pageNum = parseInt(page, 10);
+  const limitNum = parseInt(limit, 10);
+  const offset = (pageNum - 1) * limitNum;
 
-  db.all(
-    `SELECT OrderID, CustomerID, OrderDate, ShipCountry
+  // First, get the total count
+  db.get(
+    `SELECT COUNT(*) as total
      FROM Orders
      WHERE EmployeeID = ?`,
     [employeeId],
-    (err, rows) => {
+    (err, countRow) => {
       if (err) {
         console.error(err);
         return res.status(500).json({ message: "Server error" });
       }
-      res.json(rows);
+
+      const total = countRow.total;
+      const totalPages = Math.ceil(total / limitNum);
+
+      // Then get the paginated results
+      db.all(
+        `SELECT OrderID, CustomerID, OrderDate, ShipCountry
+         FROM Orders
+         WHERE EmployeeID = ?
+         ORDER BY OrderID
+         LIMIT ? OFFSET ?`,
+        [employeeId, limitNum, offset],
+        (err, rows) => {
+          if (err) {
+            console.error(err);
+            return res.status(500).json({ message: "Server error" });
+          }
+          res.json({
+            orders: rows,
+            pagination: {
+              page: pageNum,
+              limit: limitNum,
+              total: total,
+              totalPages: totalPages,
+            },
+          });
+        }
+      );
     }
   );
 });

@@ -11,6 +11,10 @@ const error = ref("");
 const orders = ref([]);
 const selectedOrderId = ref(null);
 const orderDetails = ref([]);
+const currentPage = ref(1);
+const pageSize = ref(10);
+const totalPages = ref(0);
+const totalOrders = ref(0);
 
 async function login() {
   error.value = "";
@@ -36,13 +40,23 @@ async function login() {
   }
 }
 
-async function loadOrders() {
+async function loadOrders(page = 1) {
+  currentPage.value = page;
   const res = await fetch(
-    `${apiBase}/orders?employeeId=${employee.value.employeeId}`
+    `${apiBase}/orders?employeeId=${employee.value.employeeId}&page=${page}&limit=${pageSize.value}`
   );
-  orders.value = await res.json();
+  const data = await res.json();
+  orders.value = data.orders;
+  totalPages.value = data.pagination.totalPages;
+  totalOrders.value = data.pagination.total;
   selectedOrderId.value = null;
   orderDetails.value = [];
+}
+
+function goToPage(page) {
+  if (page >= 1 && page <= totalPages.value) {
+    loadOrders(page);
+  }
 }
 
 async function selectOrder(orderId) {
@@ -120,7 +134,7 @@ async function selectOrder(orderId) {
     <!-- Orders table -->
     <section v-if="employee">
       <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem">
-        Orders
+        Orders ({{ totalOrders }} total)
       </h3>
       <table
         style="
@@ -152,6 +166,62 @@ async function selectOrder(orderId) {
           </tr>
         </tbody>
       </table>
+
+      <!-- Pagination controls -->
+      <div
+        v-if="totalPages > 1"
+        style="
+          display: flex;
+          gap: 0.5rem;
+          align-items: center;
+          justify-content: center;
+          margin-top: 1rem;
+        "
+      >
+        <button
+          @click="goToPage(currentPage - 1)"
+          :disabled="currentPage === 1"
+          style="
+            padding: 0.4rem 0.8rem;
+            border-radius: 0.5rem;
+            border: 1px solid rgba(148, 163, 184, 0.4);
+            background: rgba(15, 23, 42, 0.9);
+            cursor: pointer;
+            font-weight: 500;
+          "
+          :style="
+            currentPage === 1
+              ? 'opacity: 0.5; cursor: not-allowed;'
+              : 'cursor: pointer;'
+          "
+        >
+          Previous
+        </button>
+
+        <span style="padding: 0 0.5rem">
+          Page {{ currentPage }} of {{ totalPages }}
+        </span>
+
+        <button
+          @click="goToPage(currentPage + 1)"
+          :disabled="currentPage === totalPages"
+          style="
+            padding: 0.4rem 0.8rem;
+            border-radius: 0.5rem;
+            border: 1px solid rgba(148, 163, 184, 0.4);
+            background: rgba(15, 23, 42, 0.9);
+            cursor: pointer;
+            font-weight: 500;
+          "
+          :style="
+            currentPage === totalPages
+              ? 'opacity: 0.5; cursor: not-allowed;'
+              : 'cursor: pointer;'
+          "
+        >
+          Next
+        </button>
+      </div>
     </section>
 
     <!-- Order details -->
