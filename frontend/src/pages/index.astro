@@ -1,0 +1,27 @@
+---
+import NorthwindApp from "../components/NorthwindApp.vue";
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Northwind Orders Portal</title>
+  </head>
+  <body
+    style="font-family: system-ui; margin: 0; background:#020617; color:#e5e7eb;"
+  >
+    <main style="max-width: 960px; margin: 0 auto; padding: 2rem;">
+      <section style="margin-bottom: 2rem;">
+        <h1 style="font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem;">
+          Northwind Orders Portal
+        </h1>
+        <p style="opacity: 0.8; max-width: 40rem;">
+          Log in as a Northwind employee to explore your orders and drill into
+          product details.
+        </p>
+      </section>
+
+      <NorthwindApp client:load />
+    </main>
+  </body>
+</html>
