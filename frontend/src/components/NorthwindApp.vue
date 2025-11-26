@@ -12,7 +12,7 @@ const orders = ref([]);
 const selectedOrderId = ref(null);
 const orderDetails = ref([]);
 const currentPage = ref(1);
-const pageSize = ref(10);
+const pageSize = ref(5);
 const totalPages = ref(0);
 const totalOrders = ref(0);
 

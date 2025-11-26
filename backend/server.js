@@ -36,9 +36,9 @@ app.post("/api/login", (req, res) => {
   );
 });
 
-// GET /api/orders?employeeId=1&page=1&limit=10
+// GET /api/orders?employeeId=1&page=1&limit=5
 app.get("/api/orders", (req, res) => {
-  const { employeeId, page = 1, limit = 10 } = req.query;
+  const { employeeId, page = 1, limit = 5 } = req.query;
   const pageNum = parseInt(page, 10);
   const limitNum = parseInt(limit, 10);
   const offset = (pageNum - 1) * limitNum;
