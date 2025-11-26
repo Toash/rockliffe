@@ -67,138 +67,229 @@ async function selectOrder(orderId) {
 </script>
 
 <template>
-  <div>
+  <div style="max-width: 1200px; margin: 0 auto; padding: 2rem; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; color: #1f2937;">
     <!-- Login -->
     <section
+      v-if="!employee"
       style="
-        padding: 1.5rem;
-        border-radius: 0.75rem;
-        background: rgba(15, 23, 42, 0.9);
-        border: 1px solid rgba(148, 163, 184, 0.4);
-        margin-bottom: 1.5rem;
+        padding: 2.5rem;
+        border-radius: 8px;
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
       "
     >
-      <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem">
+      <h2 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 1.5rem; color: #111827;">
         Employee Login
       </h2>
 
       <div
         style="
           display: flex;
-          gap: 0.75rem;
+          gap: 1.5rem;
           flex-wrap: wrap;
           align-items: flex-end;
         "
       >
-        <div style="display: flex; flex-direction: column">
-          <label>Employee ID</label>
+        <div style="display: flex; flex-direction: column; flex: 1; min-width: 200px;">
+          <label style="font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.5rem;">
+            Employee ID
+          </label>
           <input
             v-model="employeeId"
             type="number"
-            style="padding: 0.4rem 0.6rem; border-radius: 0.5rem"
+            @keyup.enter="login"
+            style="
+              padding: 0.625rem 0.75rem;
+              border-radius: 6px;
+              border: 1px solid #d1d5db;
+              font-size: 0.875rem;
+              transition: border-color 0.2s, box-shadow 0.2s;
+            "
+            @focus="$event.target.style.borderColor = '#3b82f6'; $event.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)'"
+            @blur="$event.target.style.borderColor = '#d1d5db'; $event.target.style.boxShadow = 'none'"
           />
         </div>
 
-        <div style="display: flex; flex-direction: column">
-          <label>Password</label>
+        <div style="display: flex; flex-direction: column; flex: 1; min-width: 200px;">
+          <label style="font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.5rem;">
+            Password
+          </label>
           <input
             v-model="password"
             type="password"
-            style="padding: 0.4rem 0.6rem; border-radius: 0.5rem"
+            @keyup.enter="login"
+            style="
+              padding: 0.625rem 0.75rem;
+              border-radius: 6px;
+              border: 1px solid #d1d5db;
+              font-size: 0.875rem;
+              transition: border-color 0.2s, box-shadow 0.2s;
+            "
+            @focus="$event.target.style.borderColor = '#3b82f6'; $event.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)'"
+            @blur="$event.target.style.borderColor = '#d1d5db'; $event.target.style.boxShadow = 'none'"
           />
         </div>
 
         <button
           @click="login"
           style="
-            padding: 0.5rem 1rem;
-            border-radius: 999px;
+            padding: 0.625rem 1.5rem;
+            border-radius: 6px;
             border: none;
+            background: #2563eb;
+            color: white;
+            font-weight: 500;
+            font-size: 0.875rem;
             cursor: pointer;
-            font-weight: 600;
+            transition: background-color 0.2s;
+            height: fit-content;
           "
+          @mouseover="$event.target.style.background = '#1d4ed8'"
+          @mouseout="$event.target.style.background = '#2563eb'"
         >
-          Log in
+          Sign In
         </button>
       </div>
 
-      <p v-if="employee" style="margin-top: 0.75rem; opacity: 0.8">
-        Logged in as {{ employee.name }} (ID {{ employee.employeeId }})
-      </p>
-
-      <p v-if="error" style="margin-top: 0.75rem; color: #fecaca">
+      <p v-if="error" style="margin-top: 1rem; color: #dc2626; font-size: 0.875rem; padding: 0.75rem; background: #fef2f2; border-radius: 6px; border: 1px solid #fecaca;">
         {{ error }}
       </p>
     </section>
 
+    <!-- User info bar -->
+    <div
+      v-if="employee"
+      style="
+        padding: 1rem 1.5rem;
+        background: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      "
+    >
+      <div>
+        <span style="font-size: 0.875rem; color: #6b7280;">Logged in as</span>
+        <span style="font-weight: 600; color: #111827; margin-left: 0.5rem;">{{ employee.name }}</span>
+        <span style="font-size: 0.875rem; color: #9ca3af; margin-left: 0.5rem;">(ID: {{ employee.employeeId }})</span>
+      </div>
+      <button
+        @click="employee = null; orders = []; selectedOrderId = null; orderDetails = []; employeeId = ''; password = ''; error = ''"
+        style="
+          padding: 0.5rem 1rem;
+          border-radius: 6px;
+          border: 1px solid #d1d5db;
+          background: white;
+          color: #374151;
+          font-size: 0.875rem;
+          cursor: pointer;
+          transition: background-color 0.2s;
+        "
+        @mouseover="$event.target.style.background = '#f9fafb'"
+        @mouseout="$event.target.style.background = 'white'"
+      >
+        Sign Out
+      </button>
+    </div>
+
     <!-- Orders table -->
     <section v-if="employee">
-      <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem">
-        Orders ({{ totalOrders }} total)
-      </h3>
-      <table
-        style="
-          width: 100%;
-          border-collapse: collapse;
-          margin-bottom: 1rem;
-          font-size: 0.9rem;
-        "
-      >
-        <thead style="background: #020617">
-          <tr>
-            <th style="text-align: left; padding: 0.4rem">Order ID</th>
-            <th style="text-align: left; padding: 0.4rem">Customer</th>
-            <th style="text-align: left; padding: 0.4rem">Order Date</th>
-            <th style="text-align: left; padding: 0.4rem">Ship Country</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            v-for="o in orders"
-            :key="o.OrderID"
-            @click="selectOrder(o.OrderID)"
-            style="cursor: pointer"
-          >
-            <td style="padding: 0.4rem">{{ o.OrderID }}</td>
-            <td style="padding: 0.4rem">{{ o.CustomerID }}</td>
-            <td style="padding: 0.4rem">{{ o.OrderDate }}</td>
-            <td style="padding: 0.4rem">{{ o.ShipCountry }}</td>
-          </tr>
-        </tbody>
-      </table>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h3 style="font-size: 1.25rem; font-weight: 600; color: #111827;">
+          Orders
+        </h3>
+        <span style="font-size: 0.875rem; color: #6b7280;">
+          {{ totalOrders }} total
+        </span>
+      </div>
+      
+      <div style="background: white; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);">
+        <table
+          style="
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+          "
+        >
+          <thead>
+            <tr style="background: #f9fafb; border-bottom: 2px solid #e5e7eb;">
+              <th style="text-align: left; padding: 0.75rem 1rem; font-weight: 600; color: #374151; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                Order ID
+              </th>
+              <th style="text-align: left; padding: 0.75rem 1rem; font-weight: 600; color: #374151; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                Customer
+              </th>
+              <th style="text-align: left; padding: 0.75rem 1rem; font-weight: 600; color: #374151; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                Order Date
+              </th>
+              <th style="text-align: left; padding: 0.75rem 1rem; font-weight: 600; color: #374151; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                Ship Country
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="o in orders"
+              :key="o.OrderID"
+              @click="selectOrder(o.OrderID)"
+              style="
+                cursor: pointer;
+                border-bottom: 1px solid #f3f4f6;
+                transition: background-color 0.15s;
+              "
+              @mouseover="$event.currentTarget.style.background = '#f9fafb'"
+              @mouseout="$event.currentTarget.style.background = 'white'"
+            >
+              <td style="padding: 0.875rem 1rem; color: #111827; font-weight: 500;">{{ o.OrderID }}</td>
+              <td style="padding: 0.875rem 1rem; color: #374151;">{{ o.CustomerID }}</td>
+              <td style="padding: 0.875rem 1rem; color: #374151;">{{ o.OrderDate }}</td>
+              <td style="padding: 0.875rem 1rem; color: #374151;">{{ o.ShipCountry }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       <!-- Pagination controls -->
       <div
         v-if="totalPages > 1"
         style="
           display: flex;
-          gap: 0.5rem;
+          gap: 0.75rem;
           align-items: center;
           justify-content: center;
-          margin-top: 1rem;
+          margin-top: 1.5rem;
         "
       >
         <button
           @click="goToPage(currentPage - 1)"
           :disabled="currentPage === 1"
           style="
-            padding: 0.4rem 0.8rem;
-            border-radius: 0.5rem;
-            border: 1px solid rgba(148, 163, 184, 0.4);
-            background: rgba(15, 23, 42, 0.9);
-            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            border: 1px solid #d1d5db;
+            background: white;
+            color: #374151;
+            font-size: 0.875rem;
             font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
           "
           :style="
             currentPage === 1
               ? 'opacity: 0.5; cursor: not-allowed;'
-              : 'cursor: pointer;'
+              : ''
           "
+          @mouseover="currentPage !== 1 && ($event.target.style.background = '#f9fafb')"
+          @mouseout="currentPage !== 1 && ($event.target.style.background = 'white')"
         >
           Previous
         </button>
 
-        <span style="padding: 0 0.5rem">
+        <span style="padding: 0 0.75rem; font-size: 0.875rem; color: #6b7280;">
           Page {{ currentPage }} of {{ totalPages }}
         </span>
 
@@ -206,18 +297,23 @@ async function selectOrder(orderId) {
           @click="goToPage(currentPage + 1)"
           :disabled="currentPage === totalPages"
           style="
-            padding: 0.4rem 0.8rem;
-            border-radius: 0.5rem;
-            border: 1px solid rgba(148, 163, 184, 0.4);
-            background: rgba(15, 23, 42, 0.9);
-            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            border: 1px solid #d1d5db;
+            background: white;
+            color: #374151;
+            font-size: 0.875rem;
             font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
           "
           :style="
             currentPage === totalPages
               ? 'opacity: 0.5; cursor: not-allowed;'
-              : 'cursor: pointer;'
+              : ''
           "
+          @mouseover="currentPage !== totalPages && ($event.target.style.background = '#f9fafb')"
+          @mouseout="currentPage !== totalPages && ($event.target.style.background = 'white')"
         >
           Next
         </button>
@@ -225,26 +321,39 @@ async function selectOrder(orderId) {
     </section>
 
     <!-- Order details -->
-    <section v-if="selectedOrderId">
-      <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem">
+    <section v-if="selectedOrderId" style="margin-top: 2rem;">
+      <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; color: #111827;">
         Order #{{ selectedOrderId }} – Products
       </h3>
-      <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem">
-        <thead style="background: #020617">
-          <tr>
-            <th style="text-align: left; padding: 0.4rem">Product</th>
-            <th style="text-align: left; padding: 0.4rem">Quantity</th>
-            <th style="text-align: left; padding: 0.4rem">Unit Price</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="d in orderDetails" :key="d.ProductName">
-            <td style="padding: 0.4rem">{{ d.ProductName }}</td>
-            <td style="padding: 0.4rem">{{ d.Quantity }}</td>
-            <td style="padding: 0.4rem">{{ d.UnitPrice }}</td>
-          </tr>
-        </tbody>
-      </table>
+      
+      <div style="background: white; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);">
+        <table style="width: 100%; border-collapse: collapse; font-size: 0.875rem;">
+          <thead>
+            <tr style="background: #f9fafb; border-bottom: 2px solid #e5e7eb;">
+              <th style="text-align: left; padding: 0.75rem 1rem; font-weight: 600; color: #374151; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                Product
+              </th>
+              <th style="text-align: left; padding: 0.75rem 1rem; font-weight: 600; color: #374151; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                Quantity
+              </th>
+              <th style="text-align: left; padding: 0.75rem 1rem; font-weight: 600; color: #374151; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                Unit Price
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="d in orderDetails"
+              :key="d.ProductName"
+              style="border-bottom: 1px solid #f3f4f6;"
+            >
+              <td style="padding: 0.875rem 1rem; color: #111827;">{{ d.ProductName }}</td>
+              <td style="padding: 0.875rem 1rem; color: #374151;">{{ d.Quantity }}</td>
+              <td style="padding: 0.875rem 1rem; color: #374151;">${{ parseFloat(d.UnitPrice).toFixed(2) }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </section>
   </div>
 </template>
