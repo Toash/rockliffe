@@ -227,7 +227,13 @@ async function selectOrder(orderId) {
                 Order Date
               </th>
               <th style="text-align: left; padding: 0.75rem 1rem; font-weight: 600; color: #374151; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                Shipped Date
+              </th>
+              <th style="text-align: left; padding: 0.75rem 1rem; font-weight: 600; color: #374151; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">
                 Ship Country
+              </th>
+              <th style="text-align: right; padding: 0.75rem 1rem; font-weight: 600; color: #374151; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                Freight
               </th>
             </tr>
           </thead>
@@ -246,8 +252,10 @@ async function selectOrder(orderId) {
             >
               <td style="padding: 0.875rem 1rem; color: #111827; font-weight: 500;">{{ o.OrderID }}</td>
               <td style="padding: 0.875rem 1rem; color: #374151;">{{ o.CustomerID }}</td>
-              <td style="padding: 0.875rem 1rem; color: #374151;">{{ o.OrderDate }}</td>
+              <td style="padding: 0.875rem 1rem; color: #374151;">{{ o.OrderDate || '—' }}</td>
+              <td style="padding: 0.875rem 1rem; color: #374151;">{{ o.ShippedDate || '—' }}</td>
               <td style="padding: 0.875rem 1rem; color: #374151;">{{ o.ShipCountry }}</td>
+              <td style="padding: 0.875rem 1rem; color: #374151; text-align: right;">${{ o.Freight ? parseFloat(o.Freight).toFixed(2) : '0.00' }}</td>
             </tr>
           </tbody>
         </table>
@@ -333,11 +341,17 @@ async function selectOrder(orderId) {
               <th style="text-align: left; padding: 0.75rem 1rem; font-weight: 600; color: #374151; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">
                 Product
               </th>
-              <th style="text-align: left; padding: 0.75rem 1rem; font-weight: 600; color: #374151; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">
+              <th style="text-align: right; padding: 0.75rem 1rem; font-weight: 600; color: #374151; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">
                 Quantity
               </th>
-              <th style="text-align: left; padding: 0.75rem 1rem; font-weight: 600; color: #374151; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">
+              <th style="text-align: right; padding: 0.75rem 1rem; font-weight: 600; color: #374151; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">
                 Unit Price
+              </th>
+              <th style="text-align: right; padding: 0.75rem 1rem; font-weight: 600; color: #374151; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                Discount
+              </th>
+              <th style="text-align: right; padding: 0.75rem 1rem; font-weight: 600; color: #374151; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                Line Total
               </th>
             </tr>
           </thead>
@@ -348,8 +362,10 @@ async function selectOrder(orderId) {
               style="border-bottom: 1px solid #f3f4f6;"
             >
               <td style="padding: 0.875rem 1rem; color: #111827;">{{ d.ProductName }}</td>
-              <td style="padding: 0.875rem 1rem; color: #374151;">{{ d.Quantity }}</td>
-              <td style="padding: 0.875rem 1rem; color: #374151;">${{ parseFloat(d.UnitPrice).toFixed(2) }}</td>
+              <td style="padding: 0.875rem 1rem; color: #374151; text-align: right;">{{ d.Quantity }}</td>
+              <td style="padding: 0.875rem 1rem; color: #374151; text-align: right;">${{ parseFloat(d.UnitPrice).toFixed(2) }}</td>
+              <td style="padding: 0.875rem 1rem; color: #374151; text-align: right;">{{ (parseFloat(d.Discount) * 100).toFixed(1) }}%</td>
+              <td style="padding: 0.875rem 1rem; color: #111827; font-weight: 500; text-align: right;">${{ parseFloat(d.LineTotal).toFixed(2) }}</td>
             </tr>
           </tbody>
         </table>

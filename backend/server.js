@@ -60,7 +60,7 @@ app.get("/api/orders", (req, res) => {
 
       // Then get the paginated results
       db.all(
-        `SELECT OrderID, CustomerID, OrderDate, ShipCountry
+        `SELECT OrderID, CustomerID, OrderDate, ShippedDate, ShipCountry, Freight
          FROM Orders
          WHERE EmployeeID = ?
          ORDER BY OrderID
@@ -91,7 +91,8 @@ app.get("/api/orders/:id/details", (req, res) => {
   const orderId = req.params.id;
 
   db.all(
-    `SELECT od.OrderID, p.ProductName, od.Quantity, od.UnitPrice
+    `SELECT od.OrderID, p.ProductName, od.Quantity, od.UnitPrice, od.Discount,
+            (od.Quantity * od.UnitPrice * (1 - od.Discount)) as LineTotal
      FROM "Order Details" od
      JOIN Products p ON od.ProductID = p.ProductID
      WHERE od.OrderID = ?`,
